@@ -1,0 +1,11 @@
+# Add labels when PR opened.
+name: PR_Labeler
+
+on: pull_request
+
+jobs:
+  call_publish_base:
+    uses: KatatsumuriPan/KpansGitHubActions/.github/workflows/pr_labeler_base.yml@main
+    with:
+      PR_NUMBER: "${{ github.event.pull_request.number }}"
+      BRANCH_NAME: "${{ github.base_ref }}"
