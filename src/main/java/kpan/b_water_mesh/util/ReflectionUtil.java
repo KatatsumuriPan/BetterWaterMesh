@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 @SuppressWarnings({"unchecked", "unused", "deprecation"})
 public class ReflectionUtil {
@@ -70,7 +71,7 @@ public class ReflectionUtil {
         }
     }
 
-    //インライン展開されるfinal(プリミティブや文字列)は変更しても無駄
+    // インライン展開されるfinal(プリミティブや文字列)は変更しても無駄
 
     public static <T> T getPrivateField(@Nonnull Object instance, String fieldName) throws UnableToAccessFieldException {
         return getPrivateFieldInternal(instance.getClass(), instance, fieldName);
@@ -179,30 +180,42 @@ public class ReflectionUtil {
         }
     }
 
-    //マイクラ限定Obfuscated対応のリフレクション
+    // マイクラ限定Obfuscated対応のリフレクション
 
-    public static <T> T getObfPrivateValue(Object instance, String fieldName, @Nullable String fieldSrgName) throws UnableToAccessFieldException {
+    public static <T> T getObfPrivateValue(Object instance, String fieldName, String fieldSrgName) throws UnableToAccessFieldException {
         return getObfPrivateValue(instance.getClass(), instance, fieldName, fieldSrgName);
     }
 
-    public static <T> T getObfPrivateValue(Class<?> classToAccess, @Nullable Object instance, String fieldName, @Nullable String fieldSrgName) throws UnableToAccessFieldException {
-        return net.minecraftforge.fml.relauncher.ReflectionHelper.getPrivateValue((Class<? super Object>) classToAccess, instance, fieldName, fieldSrgName);
+    public static <T> T getObfPrivateValue(Class<?> classToAccess, String fieldName, String fieldSrgName) throws UnableToAccessFieldException {
+        return getObfPrivateValue(classToAccess, null, fieldName, fieldSrgName);
     }
 
-    public static <T> void setObfPrivateValue(Class<?> classToAccess, @Nullable Object instance, @Nullable Object value, String fieldName, @Nullable String fieldSrgName) throws UnableToAccessFieldException {
-        net.minecraftforge.fml.relauncher.ReflectionHelper.setPrivateValue((Class<? super Object>) classToAccess, instance, value, fieldName, fieldSrgName);
+    public static <T> T getObfPrivateValue(Class<?> classToAccess, Object instance, String fieldName, String fieldSrgName) throws UnableToAccessFieldException {
+        return ReflectionHelper.getPrivateValue((Class<? super Object>) classToAccess, instance, fieldName, fieldSrgName);
     }
 
-    public static <T> T invokeObfPrivateMethod(Object instance, String methodName, @Nullable String methodSrgName, Object... args) throws UnableToInvokeException {
-        return invokeObfPrivateMethod(instance.getClass(), instance, methodName, methodSrgName, args);
+    public static <T> void setObfPrivateValue(Object instance, String fieldName, String fieldSrgName, @Nullable Object value) throws UnableToAccessFieldException {
+        setObfPrivateValue(instance.getClass(), instance, fieldName, fieldSrgName, value);
     }
 
-    public static <T> T invokeObfPrivateMethod(Class<?> classToAccess, @Nullable Object instance, String methodName, @Nullable String methodSrgName, Object... args) throws UnableToInvokeException {
-        return invokeObfPrivateMethod(classToAccess, instance, methodName, methodSrgName, fromArgs(args), args);
+    public static <T> void setObfPrivateValue(Class<?> classToAccess, String fieldName, String fieldSrgName, @Nullable Object value) throws UnableToAccessFieldException {
+        setObfPrivateValue(classToAccess, null, fieldName, fieldSrgName, value);
     }
 
-    public static <T> T invokeObfPrivateMethod(Class<?> classToAccess, @Nullable Object instance, String methodName, @Nullable String methodSrgName, Class<?>[] parameterTypes, Object[] args) throws UnableToInvokeException {
-        Method method = net.minecraftforge.fml.relauncher.ReflectionHelper.findMethod(classToAccess, methodName, methodSrgName, parameterTypes);
+    public static <T> void setObfPrivateValue(Class<?> classToAccess, Object instance, String fieldName, String fieldSrgName, @Nullable Object value) throws UnableToAccessFieldException {
+        ReflectionHelper.setPrivateValue((Class<? super Object>) classToAccess, instance, value, fieldName, fieldSrgName);
+    }
+
+    public static <T> T invokeObfPrivateMethod(Object instance, String methodName, String methodSrgName, Object... args) throws UnableToInvokeException {
+        return invokeObfPrivateMethod(instance.getClass(), instance, methodName, methodSrgName, fromArgs(args), args);
+    }
+
+    public static <T> T invokeObfPrivateMethod(Class<?> classToAccess, String methodName, String methodSrgName, Object... args) throws UnableToInvokeException {
+        return invokeObfPrivateMethod(classToAccess, null, methodName, methodSrgName, fromArgs(args), args);
+    }
+
+    public static <T> T invokeObfPrivateMethod(Class<?> classToAccess, Object instance, String methodName, String methodSrgName, Class<?>[] parameterTypes, Object[] args) throws UnableToInvokeException {
+        Method method = ReflectionHelper.findMethod(classToAccess, methodName, methodSrgName, parameterTypes);
         try {
             return (T) method.invoke(instance, args);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {

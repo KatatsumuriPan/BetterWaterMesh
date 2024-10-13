@@ -1,12 +1,14 @@
-[{
+[
+  {
     "modid": "${modid}",
     "name": "${modname}",
     "description": "Smoother water mesh!",
     "version": "${version}",
     "mcversion": "${mcversion}",
-    "logoFile": "",
+    "logoFile": "assets/${modid}/icon.png",
     "url": "",
     "authorList": ["Katatsumuri.pan"],
     "credits": "",
     "dependencies": []
-}]
+  }
+]

@@ -1,6 +1,8 @@
 package kpan.b_water_mesh;
 
-import kpan.b_water_mesh.util.handlers.RegistryHandler;
+import kpan.b_water_mesh.renderer.CustomLiquidRenderer;
+import kpan.b_water_mesh.util.ReflectionUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -21,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 @Mod(modid = ModTagsGenerated.MODID, version = ModTagsGenerated.VERSION, name = ModTagsGenerated.MODNAME, acceptedMinecraftVersions = "[1.12.2]"
         , dependencies = ""
         , acceptableRemoteVersions = ModTagsGenerated.VERSION_MAJOR + "." + ModTagsGenerated.VERSION_MINOR
+        , clientSideOnly = true
 //
 //, serverSideOnly = true //サーバーのみにする場合に必要(acceptableRemoteVersionsを*に変えないとダメ)、デバッグ時はオフにする
 )
@@ -33,17 +36,20 @@ public class ModMain {
 
     @EventHandler
     public static void preInit(FMLPreInitializationEvent event) {
-        RegistryHandler.preInitRegistries(event);
     }
 
     @EventHandler
-    public static void init(FMLInitializationEvent event) { RegistryHandler.initRegistries(); }
+    public static void init(FMLInitializationEvent event) {
+    }
 
     @EventHandler
-    public static void postInit(FMLPostInitializationEvent event) { RegistryHandler.postInitRegistries(); }
+    public static void postInit(FMLPostInitializationEvent event) {
+        ReflectionUtil.setObfPrivateValue(Minecraft.getMinecraft().getBlockRendererDispatcher(), "fluidRenderer", "field_175025_e", new CustomLiquidRenderer(Minecraft.getMinecraft().getBlockColors()));
+    }
 
     @EventHandler
-    public static void serverInit(FMLServerStartingEvent event) { RegistryHandler.serverRegistries(event); }
+    public static void serverInit(FMLServerStartingEvent event) {
+    }
 
     @EventHandler
     public static void onServerAboutToStart(FMLServerAboutToStartEvent event) {
