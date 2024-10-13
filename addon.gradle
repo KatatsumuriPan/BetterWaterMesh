@@ -1,0 +1,13 @@
+//*****************Start Basic*****************
+minecraft {
+    injectedTags.put 'MODID', modId
+    injectedTags.put 'MODNAME', modName
+    injectedTags.put 'VERSION', modVersion
+    injectedTags.put 'MODGROUP', modGroup
+    def p1 = modVersion.indexOf('.')
+    def p2 = modVersion.indexOf('.', p1 + 1)
+    injectedTags.put 'VERSION_MAJOR', modVersion.substring(0, p1)
+    injectedTags.put 'VERSION_MINOR', modVersion.substring(p1 + 1, p2)
+    injectedTags.put 'VERSION_PATCH', modVersion.substring(p2 + 1)
+}
+//*****************End Basic*****************
