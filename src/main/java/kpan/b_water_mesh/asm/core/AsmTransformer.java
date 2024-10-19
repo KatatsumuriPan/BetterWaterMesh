@@ -5,8 +5,8 @@ import kpan.b_water_mesh.asm.core.adapters.InjectInstructionsAdapter;
 import kpan.b_water_mesh.asm.core.adapters.Instructions;
 import kpan.b_water_mesh.asm.core.adapters.MixinAccessorAdapter;
 import kpan.b_water_mesh.asm.core.adapters.MyClassVisitor;
-import kpan.b_water_mesh.asm.tf.TF_FontRenderer;
-import kpan.b_water_mesh.asm.tf.TF_TileEntityFurnace;
+import kpan.b_water_mesh.asm.tf.TF_BlockFluidBase;
+import kpan.b_water_mesh.asm.tf.TF_ModelFluid;
 import kpan.b_water_mesh.util.ListUtil;
 import kpan.b_water_mesh.util.ReflectionUtil;
 import net.minecraft.launchwrapper.IClassTransformer;
@@ -43,8 +43,8 @@ public class AsmTransformer implements IClassTransformer {
             ClassVisitor cv = cw;
             cv = rearrangeThisAfterDeobfuscation(cv, transformedName);
             cv = MixinAccessorAdapter.transformAccessor(cv, transformedName);
-            cv = TF_FontRenderer.appendVisitor(cv, transformedName);
-            cv = TF_TileEntityFurnace.appendVisitor(cv, transformedName);
+            cv = TF_BlockFluidBase.appendVisitor(cv, transformedName);
+            cv = TF_ModelFluid.appendVisitor(cv, transformedName);
 
             if (cv == cw)
                 return bytes;

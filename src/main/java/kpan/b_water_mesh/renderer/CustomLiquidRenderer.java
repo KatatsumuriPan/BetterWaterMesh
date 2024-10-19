@@ -1,6 +1,7 @@
 package kpan.b_water_mesh.renderer;
 
 import java.util.Arrays;
+import kpan.b_water_mesh.CustomWaterMeshUtil;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
@@ -21,9 +22,6 @@ public class CustomLiquidRenderer extends BlockFluidRenderer {
     private static final float SHIFT_FOR_FIX_Z_FIGHTING = 0.001F;
     private static final float DOWN_FACE_LIGHT = 0.5F;
     private static final float INNER_FACE_LIGHT = 0.7F;
-
-    private static final float MODEL_BORDER = 0.2F;
-    private static final float INNER_MAX_HEIGHT = 0.9F;
 
     private boolean constructed;
     private final BlockColors blockColors;
@@ -72,10 +70,10 @@ public class CustomLiquidRenderer extends BlockFluidRenderer {
         if (blockAccess.getBlockState(blockPosIn.up()).getMaterial() == material) {
             Arrays.fill(heights16, 1);
         } else {
-            boolean isOnGround = canLiquidTouchWith(blockAccess, blockAccess.getBlockState(blockPosIn.down()), blockPosIn.down(), EnumFacing.UP);
-            float[] sideLiquidHeights = get4SideLiquidHeights(blockAccess, blockPosIn, material, isOnGround);
-            float liquidHeight = getLiquidHeightPercent(blockStateIn);
-            heights16 = get16Heights(sideLiquidHeights, get4CornerMeshHeights(blockAccess, blockPosIn, material, sideLiquidHeights, liquidHeight), liquidHeight);
+            boolean isOnGround = CustomWaterMeshUtil.canLiquidTouchWith(blockAccess, blockAccess.getBlockState(blockPosIn.down()), blockPosIn.down(), EnumFacing.UP);
+            float[] sideLiquidHeights = CustomWaterMeshUtil.get4SideLiquidHeights(blockAccess, blockPosIn, material, isOnGround);
+            float liquidHeight = CustomWaterMeshUtil.getLiquidHeightPercent(blockStateIn);
+            heights16 = CustomWaterMeshUtil.get16Heights(sideLiquidHeights, CustomWaterMeshUtil.get4CornerMeshHeights(blockAccess, blockPosIn, material, sideLiquidHeights, liquidHeight), liquidHeight);
         }
 
         float flowAngle = BlockLiquid.getSlopeAngle(blockAccess, blockPosIn, material, blockStateIn);
@@ -148,15 +146,15 @@ public class CustomLiquidRenderer extends BlockFluidRenderer {
         } else {
             x = switch (idx >> 2) {
                 case 0 -> 0;
-                case 1 -> MODEL_BORDER;
-                case 2 -> 1 - MODEL_BORDER;
+                case 1 -> CustomWaterMeshUtil.MODEL_BORDER;
+                case 2 -> 1 - CustomWaterMeshUtil.MODEL_BORDER;
                 case 3 -> 1;
                 default -> throw new IllegalStateException("Unexpected value: " + (idx >> 2));
             };
             z = switch (idx % 4) {
                 case 0 -> 0;
-                case 1 -> MODEL_BORDER;
-                case 2 -> 1 - MODEL_BORDER;
+                case 1 -> CustomWaterMeshUtil.MODEL_BORDER;
+                case 2 -> 1 - CustomWaterMeshUtil.MODEL_BORDER;
                 case 3 -> 1;
                 default -> throw new IllegalStateException("Unexpected value: " + (idx % 4));
             };
@@ -212,19 +210,19 @@ public class CustomLiquidRenderer extends BlockFluidRenderer {
                 }
             }
             int light = state.getPackedLightmapCoords(blockAccess, pos.offset(EnumFacing.NORTH));
-            vertexNorth(pos, bufferBuilder, color, light, MODEL_BORDER, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexNorth(pos, bufferBuilder, color, light, CustomWaterMeshUtil.MODEL_BORDER, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
             vertexNorth(pos, bufferBuilder, color, light, 0, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
             vertexNorth(pos, bufferBuilder, color, light, 0, heights16[0x0], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexNorth(pos, bufferBuilder, color, light, MODEL_BORDER, heights16[0x4], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexNorth(pos, bufferBuilder, color, light, CustomWaterMeshUtil.MODEL_BORDER, heights16[0x4], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
 
-            vertexNorth(pos, bufferBuilder, color, light, 1 - MODEL_BORDER, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexNorth(pos, bufferBuilder, color, light, MODEL_BORDER, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexNorth(pos, bufferBuilder, color, light, MODEL_BORDER, heights16[0x4], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexNorth(pos, bufferBuilder, color, light, 1 - MODEL_BORDER, heights16[0x8], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexNorth(pos, bufferBuilder, color, light, 1 - CustomWaterMeshUtil.MODEL_BORDER, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexNorth(pos, bufferBuilder, color, light, CustomWaterMeshUtil.MODEL_BORDER, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexNorth(pos, bufferBuilder, color, light, CustomWaterMeshUtil.MODEL_BORDER, heights16[0x4], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexNorth(pos, bufferBuilder, color, light, 1 - CustomWaterMeshUtil.MODEL_BORDER, heights16[0x8], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
 
             vertexNorth(pos, bufferBuilder, color, light, 1, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexNorth(pos, bufferBuilder, color, light, 1 - MODEL_BORDER, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexNorth(pos, bufferBuilder, color, light, 1 - MODEL_BORDER, heights16[0x8], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexNorth(pos, bufferBuilder, color, light, 1 - CustomWaterMeshUtil.MODEL_BORDER, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexNorth(pos, bufferBuilder, color, light, 1 - CustomWaterMeshUtil.MODEL_BORDER, heights16[0x8], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
             vertexNorth(pos, bufferBuilder, color, light, 1, heights16[0xc], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
 
             // 逆
@@ -235,19 +233,19 @@ public class CustomLiquidRenderer extends BlockFluidRenderer {
             darkG *= INNER_FACE_LIGHT;
             darkB *= INNER_FACE_LIGHT;
             int colorDark = darkR << 16 | darkG << 8 | darkB << 0;
-            vertexNorth(pos, bufferBuilder, colorDark, light, MODEL_BORDER, heights16[0x4], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexNorth(pos, bufferBuilder, colorDark, light, CustomWaterMeshUtil.MODEL_BORDER, heights16[0x4], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
             vertexNorth(pos, bufferBuilder, colorDark, light, 0, heights16[0x0], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
             vertexNorth(pos, bufferBuilder, colorDark, light, 0, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexNorth(pos, bufferBuilder, colorDark, light, MODEL_BORDER, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexNorth(pos, bufferBuilder, colorDark, light, CustomWaterMeshUtil.MODEL_BORDER, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
 
-            vertexNorth(pos, bufferBuilder, colorDark, light, 1 - MODEL_BORDER, heights16[0x8], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexNorth(pos, bufferBuilder, colorDark, light, MODEL_BORDER, heights16[0x4], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexNorth(pos, bufferBuilder, colorDark, light, MODEL_BORDER, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexNorth(pos, bufferBuilder, colorDark, light, 1 - MODEL_BORDER, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexNorth(pos, bufferBuilder, colorDark, light, 1 - CustomWaterMeshUtil.MODEL_BORDER, heights16[0x8], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexNorth(pos, bufferBuilder, colorDark, light, CustomWaterMeshUtil.MODEL_BORDER, heights16[0x4], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexNorth(pos, bufferBuilder, colorDark, light, CustomWaterMeshUtil.MODEL_BORDER, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexNorth(pos, bufferBuilder, colorDark, light, 1 - CustomWaterMeshUtil.MODEL_BORDER, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
 
             vertexNorth(pos, bufferBuilder, colorDark, light, 1, heights16[0xc], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexNorth(pos, bufferBuilder, colorDark, light, 1 - MODEL_BORDER, heights16[0x8], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexNorth(pos, bufferBuilder, colorDark, light, 1 - MODEL_BORDER, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexNorth(pos, bufferBuilder, colorDark, light, 1 - CustomWaterMeshUtil.MODEL_BORDER, heights16[0x8], SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexNorth(pos, bufferBuilder, colorDark, light, 1 - CustomWaterMeshUtil.MODEL_BORDER, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
             vertexNorth(pos, bufferBuilder, colorDark, light, 1, 0, SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
         }
 
@@ -259,19 +257,19 @@ public class CustomLiquidRenderer extends BlockFluidRenderer {
                 }
             }
             int light = state.getPackedLightmapCoords(blockAccess, pos.offset(EnumFacing.SOUTH));
-            vertexSouth(pos, bufferBuilder, color, light, MODEL_BORDER, heights16[0x7], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexSouth(pos, bufferBuilder, color, light, CustomWaterMeshUtil.MODEL_BORDER, heights16[0x7], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
             vertexSouth(pos, bufferBuilder, color, light, 0, heights16[0x3], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
             vertexSouth(pos, bufferBuilder, color, light, 0, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexSouth(pos, bufferBuilder, color, light, MODEL_BORDER, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexSouth(pos, bufferBuilder, color, light, CustomWaterMeshUtil.MODEL_BORDER, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
 
-            vertexSouth(pos, bufferBuilder, color, light, 1 - MODEL_BORDER, heights16[0xb], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexSouth(pos, bufferBuilder, color, light, MODEL_BORDER, heights16[0x7], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexSouth(pos, bufferBuilder, color, light, MODEL_BORDER, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexSouth(pos, bufferBuilder, color, light, 1 - MODEL_BORDER, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexSouth(pos, bufferBuilder, color, light, 1 - CustomWaterMeshUtil.MODEL_BORDER, heights16[0xb], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexSouth(pos, bufferBuilder, color, light, CustomWaterMeshUtil.MODEL_BORDER, heights16[0x7], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexSouth(pos, bufferBuilder, color, light, CustomWaterMeshUtil.MODEL_BORDER, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexSouth(pos, bufferBuilder, color, light, 1 - CustomWaterMeshUtil.MODEL_BORDER, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
 
             vertexSouth(pos, bufferBuilder, color, light, 1, heights16[0xf], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexSouth(pos, bufferBuilder, color, light, 1 - MODEL_BORDER, heights16[0xb], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexSouth(pos, bufferBuilder, color, light, 1 - MODEL_BORDER, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexSouth(pos, bufferBuilder, color, light, 1 - CustomWaterMeshUtil.MODEL_BORDER, heights16[0xb], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexSouth(pos, bufferBuilder, color, light, 1 - CustomWaterMeshUtil.MODEL_BORDER, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
             vertexSouth(pos, bufferBuilder, color, light, 1, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
             // 逆
 
@@ -282,19 +280,19 @@ public class CustomLiquidRenderer extends BlockFluidRenderer {
             darkG *= INNER_FACE_LIGHT;
             darkB *= INNER_FACE_LIGHT;
             int colorDark = darkR << 16 | darkG << 8 | darkB << 0;
-            vertexSouth(pos, bufferBuilder, colorDark, light, MODEL_BORDER, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexSouth(pos, bufferBuilder, colorDark, light, CustomWaterMeshUtil.MODEL_BORDER, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
             vertexSouth(pos, bufferBuilder, colorDark, light, 0, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
             vertexSouth(pos, bufferBuilder, colorDark, light, 0, heights16[0x3], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexSouth(pos, bufferBuilder, colorDark, light, MODEL_BORDER, heights16[0x7], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexSouth(pos, bufferBuilder, colorDark, light, CustomWaterMeshUtil.MODEL_BORDER, heights16[0x7], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
 
-            vertexSouth(pos, bufferBuilder, colorDark, light, 1 - MODEL_BORDER, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexSouth(pos, bufferBuilder, colorDark, light, MODEL_BORDER, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexSouth(pos, bufferBuilder, colorDark, light, MODEL_BORDER, heights16[0x7], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexSouth(pos, bufferBuilder, colorDark, light, 1 - MODEL_BORDER, heights16[0xb], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexSouth(pos, bufferBuilder, colorDark, light, 1 - CustomWaterMeshUtil.MODEL_BORDER, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexSouth(pos, bufferBuilder, colorDark, light, CustomWaterMeshUtil.MODEL_BORDER, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexSouth(pos, bufferBuilder, colorDark, light, CustomWaterMeshUtil.MODEL_BORDER, heights16[0x7], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexSouth(pos, bufferBuilder, colorDark, light, 1 - CustomWaterMeshUtil.MODEL_BORDER, heights16[0xb], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
 
             vertexSouth(pos, bufferBuilder, colorDark, light, 1, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexSouth(pos, bufferBuilder, colorDark, light, 1 - MODEL_BORDER, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
-            vertexSouth(pos, bufferBuilder, colorDark, light, 1 - MODEL_BORDER, heights16[0xb], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexSouth(pos, bufferBuilder, colorDark, light, 1 - CustomWaterMeshUtil.MODEL_BORDER, 0, 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
+            vertexSouth(pos, bufferBuilder, colorDark, light, 1 - CustomWaterMeshUtil.MODEL_BORDER, heights16[0xb], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
             vertexSouth(pos, bufferBuilder, colorDark, light, 1, heights16[0xf], 1 - SHIFT_FOR_FIX_Z_FIGHTING, textureAtlasSprite);
         }
 
@@ -306,19 +304,19 @@ public class CustomLiquidRenderer extends BlockFluidRenderer {
                 }
             }
             int light = state.getPackedLightmapCoords(blockAccess, pos.offset(EnumFacing.WEST));
-            vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x1], MODEL_BORDER, textureAtlasSprite);
+            vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x1], CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
             vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x0], 0, textureAtlasSprite);
             vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, 0, textureAtlasSprite);
-            vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, MODEL_BORDER, textureAtlasSprite);
+            vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
 
-            vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x2], 1 - MODEL_BORDER, textureAtlasSprite);
-            vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x1], MODEL_BORDER, textureAtlasSprite);
-            vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, MODEL_BORDER, textureAtlasSprite);
-            vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, 1 - MODEL_BORDER, textureAtlasSprite);
+            vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x2], 1 - CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
+            vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x1], CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
+            vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
+            vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, 1 - CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
 
             vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x3], 1, textureAtlasSprite);
-            vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x2], 1 - MODEL_BORDER, textureAtlasSprite);
-            vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, 1 - MODEL_BORDER, textureAtlasSprite);
+            vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x2], 1 - CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
+            vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, 1 - CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
             vertexWest(pos, bufferBuilder, color, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, 1, textureAtlasSprite);
 
             // 逆
@@ -330,19 +328,19 @@ public class CustomLiquidRenderer extends BlockFluidRenderer {
             darkB *= INNER_FACE_LIGHT;
             int colorDark = darkR << 16 | darkG << 8 | darkB << 0;
 
-            vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, MODEL_BORDER, textureAtlasSprite);
+            vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
             vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, 0, textureAtlasSprite);
             vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x0], 0, textureAtlasSprite);
-            vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x1], MODEL_BORDER, textureAtlasSprite);
+            vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x1], CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
 
-            vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, 1 - MODEL_BORDER, textureAtlasSprite);
-            vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, MODEL_BORDER, textureAtlasSprite);
-            vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x1], MODEL_BORDER, textureAtlasSprite);
-            vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x2], 1 - MODEL_BORDER, textureAtlasSprite);
+            vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, 1 - CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
+            vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
+            vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x1], CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
+            vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x2], 1 - CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
 
             vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, 1, textureAtlasSprite);
-            vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, 1 - MODEL_BORDER, textureAtlasSprite);
-            vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x2], 1 - MODEL_BORDER, textureAtlasSprite);
+            vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, 0, 1 - CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
+            vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x2], 1 - CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
             vertexWest(pos, bufferBuilder, colorDark, light, SHIFT_FOR_FIX_Z_FIGHTING, heights16[0x3], 1, textureAtlasSprite);
 
         }
@@ -355,19 +353,19 @@ public class CustomLiquidRenderer extends BlockFluidRenderer {
                 }
             }
             int light = state.getPackedLightmapCoords(blockAccess, pos.offset(EnumFacing.EAST));
-            vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, MODEL_BORDER, textureAtlasSprite);
+            vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
             vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, 0, textureAtlasSprite);
             vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xc], 0, textureAtlasSprite);
-            vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xd], MODEL_BORDER, textureAtlasSprite);
+            vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xd], CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
 
-            vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, 1 - MODEL_BORDER, textureAtlasSprite);
-            vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, MODEL_BORDER, textureAtlasSprite);
-            vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xd], MODEL_BORDER, textureAtlasSprite);
-            vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xe], 1 - MODEL_BORDER, textureAtlasSprite);
+            vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, 1 - CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
+            vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
+            vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xd], CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
+            vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xe], 1 - CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
 
             vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, 1, textureAtlasSprite);
-            vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, 1 - MODEL_BORDER, textureAtlasSprite);
-            vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xe], 1 - MODEL_BORDER, textureAtlasSprite);
+            vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, 1 - CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
+            vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xe], 1 - CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
             vertexEast(pos, bufferBuilder, color, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xf], 1, textureAtlasSprite);
 
             // 逆
@@ -378,19 +376,19 @@ public class CustomLiquidRenderer extends BlockFluidRenderer {
             darkG *= INNER_FACE_LIGHT;
             darkB *= INNER_FACE_LIGHT;
             int colorDark = darkR << 16 | darkG << 8 | darkB << 0;
-            vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xd], MODEL_BORDER, textureAtlasSprite);
+            vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xd], CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
             vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xc], 0, textureAtlasSprite);
             vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, 0, textureAtlasSprite);
-            vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, MODEL_BORDER, textureAtlasSprite);
+            vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
 
-            vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xe], 1 - MODEL_BORDER, textureAtlasSprite);
-            vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xd], MODEL_BORDER, textureAtlasSprite);
-            vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, MODEL_BORDER, textureAtlasSprite);
-            vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, 1 - MODEL_BORDER, textureAtlasSprite);
+            vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xe], 1 - CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
+            vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xd], CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
+            vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
+            vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, 1 - CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
 
             vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xf], 1, textureAtlasSprite);
-            vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xe], 1 - MODEL_BORDER, textureAtlasSprite);
-            vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, 1 - MODEL_BORDER, textureAtlasSprite);
+            vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, heights16[0xe], 1 - CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
+            vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, 1 - CustomWaterMeshUtil.MODEL_BORDER, textureAtlasSprite);
             vertexEast(pos, bufferBuilder, colorDark, light, 1 - SHIFT_FOR_FIX_Z_FIGHTING, 0, 1, textureAtlasSprite);
         }
 
@@ -448,197 +446,7 @@ public class CustomLiquidRenderer extends BlockFluidRenderer {
                 .endVertex();
     }
 
-    private static float getLiquidHeightPercent(IBlockState state) {
-        int level = state.getValue(BlockLiquid.LEVEL);
-        if (level >= 8)
-            return 1;
-        else
-            return (1 - level / 7F) * INNER_MAX_HEIGHT;
-    }
-
-    private static boolean canLiquidTouchWith(IBlockAccess blockAccess, IBlockState state, BlockPos pos, EnumFacing side) {
-        if (state.isFullBlock())
-            return true;
-        if (state.isSideSolid(blockAccess, pos, side))
-            return true;
-        if (state.getBlockFaceShape(blockAccess, pos, side.getOpposite()) == BlockFaceShape.SOLID)
-            return true;
-
-        return false;
-    }
-
 
     //
 
-    private static final float IS_WALL = -1F;
-    private static final float IS_AIR = -2F;
-    private static final float HAS_LIQUID_ABOVE = -3F;
-    private static float[] get4SideLiquidHeights(IBlockAccess blockAccess, BlockPos pos, Material materialCondition, boolean isOnGround) {
-        float[] res = new float[4];
-        for (int i = 0; i < EnumFacing.HORIZONTALS.length; i++) {
-            EnumFacing side = EnumFacing.HORIZONTALS[i];
-            IBlockState sideState = blockAccess.getBlockState(pos.offset(side));
-            if (blockAccess.getBlockState(pos.offset(side).up()).getMaterial() == materialCondition)
-                res[i] = HAS_LIQUID_ABOVE;
-            else if (sideState.getMaterial() == materialCondition)
-                res[i] = getLiquidHeightPercent(sideState);
-            else if (isOnGround && canLiquidTouchWith(blockAccess, sideState, pos, side.getOpposite()))
-                res[i] = IS_WALL;
-            else
-                res[i] = IS_AIR;
-        }
-        return res;
-    }
-    private static float[] get4CornerMeshHeights(IBlockAccess blockAccess, BlockPos pos, Material materialCondition, float[] sideLiquidHeights, float centerHeight) {
-        float[] res = new float[4];
-        for (int i = 0; i < EnumFacing.HORIZONTALS.length; i++) {
-            EnumFacing side = EnumFacing.HORIZONTALS[i];
-            int nextI = (i + 1) % 4;
-            EnumFacing nextSide = EnumFacing.HORIZONTALS[nextI];
-            if (sideLiquidHeights[i] == HAS_LIQUID_ABOVE || sideLiquidHeights[nextI] == HAS_LIQUID_ABOVE) {
-                res[i] = 1;
-            } else if (sideLiquidHeights[i] < 0 && sideLiquidHeights[nextI] < 0) {
-                float den = 0;
-                float sum = 0;
-                float b = 1f;
-                if (sideLiquidHeights[i] == IS_WALL) {
-                    sum += b;
-                    den += b;
-                } else {
-                    den += 1;
-                }
-                if (sideLiquidHeights[nextI] == IS_WALL) {
-                    sum += b;
-                    den += b;
-                } else {
-                    den += 1;
-                }
-
-                float a = 0.8F;
-                float h = centerHeight / INNER_MAX_HEIGHT * a + (1 - a);
-                sum *= h;
-                res[i] = sum / den;
-            } else {
-                BlockPos cornerPos = pos.offset(side).offset(nextSide);
-                if (blockAccess.getBlockState(cornerPos.up()).getMaterial() == materialCondition) {
-                    res[i] = 1;
-                } else {
-                    float den = 0;
-                    float sum = 0;
-                    float liquidWeight = 13F;
-                    boolean wallExists = false;
-                    if (sideLiquidHeights[i] >= 0) {
-                        sum += sideLiquidHeights[i] * liquidWeight;
-                        den += liquidWeight;
-                    } else if (sideLiquidHeights[i] == IS_WALL) {
-                        wallExists = true;
-                        sum += 1.0f;
-                        den += 1.0f;
-                    } else {
-                        den += 1;
-                    }
-                    if (sideLiquidHeights[nextI] >= 0) {
-                        sum += sideLiquidHeights[nextI] * liquidWeight;
-                        den += liquidWeight;
-                    } else if (sideLiquidHeights[nextI] == IS_WALL) {
-                        wallExists = true;
-                        sum += 1.0f;
-                        den += 1.0f;
-                    } else {
-                        den += 1;
-                    }
-                    IBlockState cornerState = blockAccess.getBlockState(cornerPos);
-                    if (cornerState.getMaterial() == materialCondition) {
-                        sum += getLiquidHeightPercent(cornerState) * liquidWeight;
-                        den += liquidWeight;
-                    } else if ((sideLiquidHeights[i] >= 0 && canLiquidTouchWith(blockAccess, cornerState, cornerPos, nextSide.getOpposite())
-                            || sideLiquidHeights[nextI] >= 0 && canLiquidTouchWith(blockAccess, cornerState, cornerPos, side.getOpposite()))) {
-                        wallExists = true;
-                        sum += 1.0f;
-                        den += 1.0f;
-                    } else {
-                        den += 1;
-                    }
-
-                    sum += centerHeight * liquidWeight;
-                    den += liquidWeight;
-                    if (!wallExists)
-                        sum *= 0.9F;
-                    res[i] = sum / den;
-                }
-            }
-        }
-        return res;
-    }
-    private static float[] get16Heights(float[] sideLiquidHeights, float[] cornerMeshHeights, float centerHeight) {
-        // 0  4  8  c
-        //
-        // 1  5  9  d
-        //     10
-        // 2  6  a  e
-        //
-        // 3  7  b  f
-        float[] res = new float[16];
-
-        res[0x0] = cornerMeshHeights[EnumFacing.WEST.getHorizontalIndex()];
-        res[0xc] = cornerMeshHeights[EnumFacing.NORTH.getHorizontalIndex()];
-        res[0xf] = cornerMeshHeights[EnumFacing.EAST.getHorizontalIndex()];
-        res[0x3] = cornerMeshHeights[EnumFacing.SOUTH.getHorizontalIndex()];
-
-
-        get16Height_edge(res, 0x1, 0x2, 0x0, 0x3, EnumFacing.WEST, sideLiquidHeights, centerHeight);
-        get16Height_edge(res, 0x4, 0x8, 0x0, 0xc, EnumFacing.NORTH, sideLiquidHeights, centerHeight);
-        get16Height_edge(res, 0x7, 0xb, 0x3, 0xf, EnumFacing.SOUTH, sideLiquidHeights, centerHeight);
-        get16Height_edge(res, 0xd, 0xe, 0xc, 0xf, EnumFacing.EAST, sideLiquidHeights, centerHeight);
-        res[0x5] = get16Height_inner(res, 0x0, 0x1, 0x4, EnumFacing.WEST, EnumFacing.NORTH, sideLiquidHeights, centerHeight);
-        res[0x6] = get16Height_inner(res, 0x3, 0x2, 0x7, EnumFacing.WEST, EnumFacing.SOUTH, sideLiquidHeights, centerHeight);
-        res[0x9] = get16Height_inner(res, 0xc, 0x8, 0xd, EnumFacing.EAST, EnumFacing.NORTH, sideLiquidHeights, centerHeight);
-        res[0xa] = get16Height_inner(res, 0xf, 0xb, 0xe, EnumFacing.EAST, EnumFacing.SOUTH, sideLiquidHeights, centerHeight);
-
-        return res;
-    }
-    private static void get16Height_edge(float[] heights, int index1, int index2, int cornerIndex1, int cornerIndex2, EnumFacing side, float[] sideLiquidHeights, float centerHeight) {
-        if (sideLiquidHeights[side.getHorizontalIndex()] == HAS_LIQUID_ABOVE) {
-            heights[index1] = heights[index2] = 1;
-        } else if (sideLiquidHeights[side.getHorizontalIndex()] >= 0) {
-            heights[index1] = heights[index2] = (sideLiquidHeights[side.getHorizontalIndex()] + centerHeight) / 2;
-        } else if (sideLiquidHeights[side.getHorizontalIndex()] == IS_WALL) {
-            float edgeMiddleHeight = (heights[cornerIndex1] + heights[cornerIndex2] + centerHeight * 14) / 16F;
-            // 壁面なので普通に重み付き平均
-            heights[index1] = (edgeMiddleHeight * MODEL_BORDER + heights[cornerIndex1] * (0.5F - MODEL_BORDER)) * 2;
-            heights[index2] = (edgeMiddleHeight * MODEL_BORDER + heights[cornerIndex2] * (0.5F - MODEL_BORDER)) * 2;
-        } else if (heights[cornerIndex1] + heights[cornerIndex2] < centerHeight * 2) {
-            float edgeMiddleHeight = (heights[cornerIndex1] + heights[cornerIndex2] + centerHeight * 14) / 16F;
-            // 中心の方が高いときは低くなりすぎないように
-            heights[index1] = (edgeMiddleHeight * (MODEL_BORDER + 0.35F) + heights[cornerIndex1] * (0.65F - MODEL_BORDER));
-            heights[index2] = (edgeMiddleHeight * (MODEL_BORDER + 0.35F) + heights[cornerIndex2] * (0.65F - MODEL_BORDER));
-        } else {
-            float edgeMiddleHeight = (heights[cornerIndex1] + heights[cornerIndex2] + centerHeight * 14) / 16F;
-            // 角の方が高いときはがっつり低めに
-            heights[index1] = (edgeMiddleHeight * MODEL_BORDER + heights[cornerIndex1] * (0.5F - MODEL_BORDER)) * 2 * 0.7F;
-            heights[index2] = (edgeMiddleHeight * MODEL_BORDER + heights[cornerIndex2] * (0.5F - MODEL_BORDER)) * 2 * 0.7F;
-        }
-    }
-    private static float get16Height_inner(float[] heights, int cornerIndex, int sideIndex1, int sideIndex2, EnumFacing side1, EnumFacing side2, float[] sideLiquidHeights, float centerHeight) {
-        if (sideLiquidHeights[side1.getHorizontalIndex()] >= 0) {
-            float edge1Height = (sideLiquidHeights[side1.getHorizontalIndex()] + centerHeight) / 2;
-            float side1Height = edge1Height * (1 - MODEL_BORDER) + centerHeight * MODEL_BORDER;
-            if (sideLiquidHeights[side2.getHorizontalIndex()] >= 0) {
-                float edge2Height = (sideLiquidHeights[side2.getHorizontalIndex()] + centerHeight) / 2;
-                float side2Height = edge2Height * (1 - MODEL_BORDER) + centerHeight * MODEL_BORDER;
-                return (side1Height + side2Height) / 2;
-            } else {
-                return side1Height;
-            }
-        } else {
-            if (sideLiquidHeights[side2.getHorizontalIndex()] >= 0) {
-                float edge2Height = (sideLiquidHeights[side2.getHorizontalIndex()] + centerHeight) / 2;
-                float side2Height = edge2Height * (1 - MODEL_BORDER) + centerHeight * MODEL_BORDER;
-                return side2Height;
-            } else {
-                return (heights[cornerIndex] + heights[sideIndex1] + heights[sideIndex2] + centerHeight * 10) / 13F;
-            }
-        }
-
-    }
 }
