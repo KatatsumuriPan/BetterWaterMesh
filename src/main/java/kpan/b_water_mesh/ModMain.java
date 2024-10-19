@@ -2,6 +2,7 @@ package kpan.b_water_mesh;
 
 import kpan.b_water_mesh.renderer.CustomLiquidRenderer;
 import kpan.b_water_mesh.util.ReflectionUtil;
+import kpan.srg2mcp_name_remapper.Remapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.Mod;
@@ -49,6 +50,7 @@ public class ModMain {
 
     @EventHandler
     public static void serverInit(FMLServerStartingEvent event) {
+        Remapper.clearCaches();
     }
 
     @EventHandler
