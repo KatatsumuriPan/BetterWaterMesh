@@ -67,6 +67,7 @@ public class CustomWaterMeshUtil {
                 if (blockAccess.getBlockState(cornerPos.up()).getMaterial() == materialCondition) {
                     res[i] = 1;
                 } else {
+                    int liquidNum = 0;
                     float den = 0;
                     float sum = 0;
                     float liquidWeight = 13F;
@@ -74,6 +75,7 @@ public class CustomWaterMeshUtil {
                     if (sideLiquidHeights[i] >= 0) {
                         sum += sideLiquidHeights[i] * liquidWeight;
                         den += liquidWeight;
+                        liquidNum++;
                     } else if (sideLiquidHeights[i] == IS_WALL) {
                         wallExists = true;
                         sum += 1.0f;
@@ -84,6 +86,7 @@ public class CustomWaterMeshUtil {
                     if (sideLiquidHeights[nextI] >= 0) {
                         sum += sideLiquidHeights[nextI] * liquidWeight;
                         den += liquidWeight;
+                        liquidNum++;
                     } else if (sideLiquidHeights[nextI] == IS_WALL) {
                         wallExists = true;
                         sum += 1.0f;
@@ -95,6 +98,7 @@ public class CustomWaterMeshUtil {
                     if (cornerState.getMaterial() == materialCondition) {
                         sum += getLiquidHeightPercent(cornerState) * liquidWeight;
                         den += liquidWeight;
+                        liquidNum++;
                     } else if ((sideLiquidHeights[i] >= 0 && canLiquidTouchWith(blockAccess, cornerState, cornerPos, nextSide.getOpposite())
                             || sideLiquidHeights[nextI] >= 0 && canLiquidTouchWith(blockAccess, cornerState, cornerPos, side.getOpposite()))) {
                         wallExists = true;
@@ -106,7 +110,7 @@ public class CustomWaterMeshUtil {
 
                     sum += centerHeight * liquidWeight;
                     den += liquidWeight;
-                    if (!wallExists)
+                    if (!wallExists && liquidNum < 3)
                         sum *= 0.9F;
                     res[i] = sum / den;
                 }
