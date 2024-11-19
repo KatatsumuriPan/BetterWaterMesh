@@ -41,10 +41,12 @@ public class CustomWaterMeshUtil {
             EnumFacing nextSide = EnumFacing.HORIZONTALS[nextI];
             if (sideLiquidHeights[i] == HAS_LIQUID_ABOVE || sideLiquidHeights[nextI] == HAS_LIQUID_ABOVE) {
                 res[i] = 1;
-            } else if (sideLiquidHeights[i] < 0 && sideLiquidHeights[nextI] < 0) {
+                continue;
+            }
+            if (sideLiquidHeights[i] < 0 && sideLiquidHeights[nextI] < 0) {
                 float den = 0;
                 float sum = 0;
-                float b = 1f;
+                float b = 9f;
                 if (sideLiquidHeights[i] == IS_WALL) {
                     sum += b;
                     den += b;
@@ -157,14 +159,14 @@ public class CustomWaterMeshUtil {
             heights[index2] = (edgeMiddleHeight * MODEL_BORDER + heights[cornerIndex2] * (0.5F - MODEL_BORDER)) * 2;
         } else if (heights[cornerIndex1] + heights[cornerIndex2] < centerHeight * 2) {
             float edgeMiddleHeight = (heights[cornerIndex1] + heights[cornerIndex2] + centerHeight * 14) / 16F;
-            // 中心の方が高いときは低くなりすぎないように
+            // 角より中心の方が高いときは低くなりすぎないように
             heights[index1] = (edgeMiddleHeight * (MODEL_BORDER + 0.35F) + heights[cornerIndex1] * (0.65F - MODEL_BORDER));
             heights[index2] = (edgeMiddleHeight * (MODEL_BORDER + 0.35F) + heights[cornerIndex2] * (0.65F - MODEL_BORDER));
         } else {
             float edgeMiddleHeight = (heights[cornerIndex1] + heights[cornerIndex2] + centerHeight * 14) / 16F;
-            // 角の方が高いときはがっつり低めに
-            heights[index1] = (edgeMiddleHeight * MODEL_BORDER + heights[cornerIndex1] * (0.5F - MODEL_BORDER)) * 2 * 0.7F;
-            heights[index2] = (edgeMiddleHeight * MODEL_BORDER + heights[cornerIndex2] * (0.5F - MODEL_BORDER)) * 2 * 0.7F;
+            // 中心より角の方が高いときはがっつり低めに
+            heights[index1] = Math.max((edgeMiddleHeight * MODEL_BORDER + heights[cornerIndex1] * (0.5F - MODEL_BORDER)) * 2 * 0.7F - 0.1F, 0.02F);
+            heights[index2] = Math.max((edgeMiddleHeight * MODEL_BORDER + heights[cornerIndex2] * (0.5F - MODEL_BORDER)) * 2 * 0.7F - 0.1F, 0.02F);
         }
     }
     public static float get16Height_inner(float[] heights, int cornerIndex, int sideIndex1, int sideIndex2, EnumFacing side1, EnumFacing side2, float[] sideLiquidHeights, float centerHeight) {
