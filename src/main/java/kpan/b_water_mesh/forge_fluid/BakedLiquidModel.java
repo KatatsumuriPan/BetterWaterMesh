@@ -221,6 +221,7 @@ public class BakedLiquidModel implements IBakedModel {
         builder.setQuadOrientation(side);
         builder.setTexture(texture);
         builder.setQuadTint(0);
+        builder.setApplyDiffuseLighting(false);
 
         boolean hasTransform = transformation.isPresent() && !transformation.get().isIdentity();
         IVertexConsumer consumer = hasTransform ? new TRSRTransformer(builder, transformation.get()) : builder;
@@ -419,6 +420,7 @@ public class BakedLiquidModel implements IBakedModel {
         UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(format);
         builder.setQuadOrientation(EnumFacing.UP);
         builder.setQuadTint(0);
+        builder.setApplyDiffuseLighting(false);
         for (int i = 0; i < indices.length; i++) {
             int index = indices[inside ? (indices.length - 1 - i) : i];
 
@@ -564,6 +566,7 @@ public class BakedLiquidModel implements IBakedModel {
         builder.setQuadOrientation(side);
         builder.setTexture(textureAtlasSprite);
         builder.setQuadTint(0);
+        builder.setApplyDiffuseLighting(false);
         float z;
         if (side == EnumFacing.NORTH)
             z = inside ? CustomWaterMeshUtil.OFFSET_TO_FIX_Z_FIGHTING : 0;
@@ -588,6 +591,7 @@ public class BakedLiquidModel implements IBakedModel {
         builder.setQuadOrientation(side);
         builder.setTexture(textureAtlasSprite);
         builder.setQuadTint(0);
+        builder.setApplyDiffuseLighting(false);
         float x;
         if (side == EnumFacing.WEST)
             x = inside ? CustomWaterMeshUtil.OFFSET_TO_FIX_Z_FIGHTING : 0;
